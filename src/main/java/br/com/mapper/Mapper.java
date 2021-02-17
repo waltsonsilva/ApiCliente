@@ -14,6 +14,6 @@ public class Mapper {
 	}
 	
 	public Cliente toRequest(ClienteRequestDTO dto) {
-		return Cliente.builder().nomeCompleto(dto.getNome()).build();
+		return Cliente.builder().nomeCompleto(dto.getNomeCompleto()).build();
 	}
 }
