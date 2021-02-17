@@ -44,7 +44,7 @@ public class ClienteServiceImpl implements IClienteService {
 		if (cliente == null) {
 			return null;
 		}
-		cliente.setNomeCompleto(clienteRequest.getNome());
+		cliente.setNomeCompleto(clienteRequest.getNomeCompleto());
 		return clienteRepository.save(cliente);
 
 	}
@@ -72,7 +72,10 @@ public class ClienteServiceImpl implements IClienteService {
 
 	@Override
 	public Cliente removeCliente(Long id) {
-		// TODO Auto-generated method stub
+		if(Objects.nonNull(id)) {
+			Cliente cliente = findCliente(id);
+			clienteRepository.delete(cliente);
+		}
 		return null;
 	}
 
