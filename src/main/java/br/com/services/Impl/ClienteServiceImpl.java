@@ -1,4 +1,4 @@
-package br.com.services;
+package br.com.services.Impl;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import br.com.beans.Cliente;
 import br.com.dto.ClienteRequestDTO;
 import br.com.repository.IClienteRepository;
+import br.com.services.IClienteService;
 
 @Service
 public class ClienteServiceImpl implements IClienteService {
@@ -25,14 +26,14 @@ public class ClienteServiceImpl implements IClienteService {
 	public Cliente insertCliente(Cliente cliente) {
 
 		logger.info(".:: CADASTRO DO CLIENTE ::.");
-		if (cliente == null) {
-			throw new IllegalArgumentException("A Transportadora não pode ser nulo");
+		if (Objects.isNull(cliente)) {
+			throw new IllegalArgumentException("A Cliente não pode ser nulo");
 
 		}
 
 		logger.info("[ CAD-CLIENTE ] - Iniciando persistência...");
 		Cliente clienteInsert = clienteRepository.save(cliente);
-		if (clienteInsert != null)
+		if (Objects.nonNull(clienteInsert))
 			logger.info("[ CAD-CLIENTE ] - persistência efetuada com sucesso...");
 		return clienteInsert;
 
@@ -40,13 +41,31 @@ public class ClienteServiceImpl implements IClienteService {
 
 	
 	public Cliente updateCliente(ClienteRequestDTO clienteRequest, Long id) {
+		logger.info(".:: UPDATE DO CLIENTE ::.");
 		Cliente  cliente = findCliente(id);
-		if (cliente == null) {
+		
+		if (Objects.isNull(cliente)) {
 			return null;
 		}
+		
 		cliente.setNomeCompleto(clienteRequest.getNomeCompleto());
-		return clienteRepository.save(cliente);
-
+		clienteRepository.save(cliente);
+		logger.info("[ UPD-CLIENTE ] - persistência efetuada com sucesso...");
+		return cliente;
+	}
+	
+	public Cliente atualizarCliente(Long id, String nome) {
+		logger.info(".:: UPDATE DO CLIENTE ::.");
+		if(Objects.nonNull(id)) {
+			Cliente cliente = findCliente(id);
+			if(Objects.nonNull(nome) && !nome.isEmpty()) {
+				cliente.setNomeCompleto(nome);
+				clienteRepository.save(cliente);
+				logger.info("[ UPD-CLIENTE ] - persistência efetuada com sucesso...");
+			}
+			
+		}
+		return null;
 	}
 
 	@Override
@@ -54,7 +73,7 @@ public class ClienteServiceImpl implements IClienteService {
 
 		logger.info(".:: BUSCA DE CLIENTE ::.");
 		logger.info("[ BUSCA-CLIENTE ] - Iniciando busca...");
-		if (id == null && id <= 0) {
+		if (Objects.nonNull(id) &&  id <= 0) {
 			logger.info("[ BUSCA-CLIENTEl ] -  Usuario não pode ter código nulo ou menor/igual a zero");
 		}
 		Optional<Cliente> cliente = clienteRepository.findById(id);
@@ -77,6 +96,19 @@ public class ClienteServiceImpl implements IClienteService {
 			clienteRepository.delete(cliente);
 		}
 		return null;
+	}
+
+
+	@Override
+	public Cliente searchClienteNome(String nome) {
+		if(Objects.isNull(nome) && nome.isEmpty()) {
+			throw new IllegalArgumentException("Nome está nulo");
+		}
+		Cliente cliente = clienteRepository.findByNomeCompleto(nome);
+		if(Objects.isNull(cliente)) {
+			throw new IllegalArgumentException("Cliente não encontrado");
+		}
+		return cliente;
 	}
 
 

@@ -40,10 +40,13 @@ public class ClienteController {
 	@PostMapping("/inserir")
 	public ResponseEntity<Cliente>insertCliente (@Valid @RequestBody Cliente cliente)
 	{
-		if(cliente ==null) {			
-			 throw new IllegalArgumentException("Não foi possível realizar a insersão");
+		if(Objects.isNull(cliente)) {			
+			 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		Cliente clienteInsert = clienteService.insertCliente(cliente);
+		if(Objects.isNull(clienteInsert)) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 		return new ResponseEntity<Cliente>(clienteInsert, HttpStatus.CREATED);
 	}
 	
@@ -76,7 +79,7 @@ public class ClienteController {
 			ClienteResponseDTO clienteResponse = mapper.toResponse(clienteUpdate);
 			return new ResponseEntity<ClienteResponseDTO>(clienteResponse, HttpStatus.OK);
 		}
-		return null;
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	@DeleteMapping("/deletar/{id}")
@@ -85,6 +88,28 @@ public class ClienteController {
 			clienteService.removeCliente(id);
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
-		return null;
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
+	
+	@PutMapping("/atualiar/{id}/{nome}")
+	public ResponseEntity<Cliente>atualizarCliente(@PathVariable Long id, @PathVariable String nome){
+		if(Objects.nonNull(id)&&Objects.nonNull(nome)) {
+			Cliente cliente = clienteService.atualizarCliente(id, nome);
+			return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+	
+	@GetMapping("/pesqPorNome/{nome}")
+	public ResponseEntity<Cliente>pesqClienteNome(@PathVariable String nome){
+		if(Objects.isNull(nome)&& nome.isEmpty()){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		Cliente cliente = clienteService.searchClienteNome(nome);
+		if(Objects.isNull(cliente)) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
+	}
+	
 }

@@ -12,4 +12,6 @@ public interface IClienteService {
 	Cliente findCliente(Long id);
 	List<Cliente> listaCliente();
 	Cliente removeCliente (Long id);
+	Cliente atualizarCliente(Long id, String nome);
+	Cliente searchClienteNome(String nome);
 }
